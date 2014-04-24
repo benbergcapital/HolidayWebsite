@@ -23,7 +23,7 @@ public class HotelObject {
 	
 	int GetPrice(String StartDate)
 	{
-		return _PricesMap.get(StartDate);		
+		return _PricesMap.get(StartDate) != null ? _PricesMap.get(StartDate) : 0;		
 	}
 	String GetHotelName()
 	{

@@ -126,7 +126,7 @@ public class SkyScannerScrape {
 		
 		Header[] headers = response.getAllHeaders();
 		
-		
+		System.out.println(response.getStatusLine());
 		for (Header header : headers) {
 			System.out.println("Key : " + header.getName() 
 			      + " ,Value : " + header.getValue());
