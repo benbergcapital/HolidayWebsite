@@ -36,17 +36,22 @@ public class Main {
 	public static String Test(String g)
 	{
 		Main m = new Main();
+	
+		BookingHotelScrape b = new BookingHotelScrape();
+		b.Scrape();
+		
 		
 		if (g.equals("HOTEL"))
 		{
-			return m.getHotels();
+	//	return m.getHotels();
 		}
 		else
 		{
-			return m.getFlights();
+	//		return m.getFlights();
 		}
 		
-			
+			return null;
+					
 		
 	}
 	
