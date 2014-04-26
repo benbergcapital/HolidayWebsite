@@ -2,17 +2,20 @@ package coreservlets;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.Set;
 
 public class HotelObject {
 
 	private String _HotelName;
 	
 	private HashMap<String ,Integer> _PricesMap; 
-	
+	private HashMap<String ,String> _UrlMap; 
 	HotelObject(String name)
 	{
 		this._HotelName = name;
 		_PricesMap = new HashMap<String ,Integer>();
+		_UrlMap = new HashMap<String, String>();
 	}
 	
 	void setValue(String StartDate, int Price)
@@ -27,6 +30,7 @@ public class HotelObject {
 	}
 	String GetHotelName()
 	{
+		_HotelName = _HotelName.replace("?", "&#9734");
 		return _HotelName;		
 	}
 	boolean DatePricePairAlreadyExists(String date)
@@ -88,4 +92,24 @@ public class HotelObject {
 		
 		return null;
 	}
+	public Set<Entry<String, Integer>> getPriceMap()
+	{
+		return this._PricesMap.entrySet();
+	}
+	public void setHotelName(String name)
+	{
+		this._HotelName = name;
+	}
+	public void setUrl(String StartDate,String url)
+	{
+		_UrlMap.put(StartDate,url);
+		
+	}
+
+	public  Set<Entry<String, String>> getUrlMap() {
+		return this._UrlMap.entrySet();
+		
+		}
+
+	
 }

@@ -1,5 +1,6 @@
 package coreservlets;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -17,63 +18,73 @@ import org.openqa.selenium.support.ui.Select;
 public class BookingHotelScrape {
 
 	
-	public void Scrape()
+	public HotelObject Scrape(String url, String startdate, int duration, int variance) throws ParseException
 	{
 		List<HotelObject> _ListOfHotelQuotes = new ArrayList<HotelObject>();
 		WebDriver driver = new HtmlUnitDriver();
 		driver.manage().deleteAllCookies();
-		Calendar StartDate = new GregorianCalendar(2014,7,21);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		
+		Calendar StartDate = new GregorianCalendar();
+		StartDate.setTime(sdf.parse(startdate));
 		Calendar EndDate = new GregorianCalendar();
+		
+		
 		EndDate = (Calendar) StartDate.clone();
-		EndDate.add(Calendar.DATE, 7);
+		EndDate.add(Calendar.DATE, duration);
 		HotelObject _HotelQuote = new HotelObject("test");
 		
-		for (int i=0;i<7;i++)
+		for (int i=0;i<variance;i++)
 		{
-		StartDate.add(Calendar.DATE, 1);
-		EndDate.add(Calendar.DATE, 1);
 		System.out.println(StartDate.getTime());
 		System.out.println(EndDate.getTime());
+				driver.manage().deleteAllCookies();
+		//Required otherwise booking.com remembers some things making it difficult to scrape
 		
-		driver.manage().deleteAllCookies();
-		//Gets the prices and populates the List
-		
-		
-		
-	    GetResultsSet(driver,StartDate,EndDate, _HotelQuote);
-	      
+	    GetResultsSet(driver,url,StartDate,EndDate, _HotelQuote);
+	    StartDate.add(Calendar.DATE, 1);
+		EndDate.add(Calendar.DATE, 1);
 		
 		}
 		int i =0 ;
-		
+		return _HotelQuote;
 		
 	}
 	
 	
 	
-	public void GetResultsSet(WebDriver driver2, Calendar StartCalendar, Calendar EndCalendar, HotelObject _HotelQuote)
+	public void GetResultsSet(WebDriver driver, String url,Calendar StartCalendar, Calendar EndCalendar, HotelObject _HotelQuote)
 	{
-		WebDriver driver = new HtmlUnitDriver();
-		 driver.get("http://www.booking.com/hotel/es/noelia-sur.en-us.html?sid=b59276a8d43bd6c9ed45489edac9b0e9;dcid=1;checkin=2014-05-03;checkout=2014-05-08;ucfs=1;srfid=1d472e0b6c2a573343061771b05b205ba4ad8806X2");
+	
+		 driver.get(url);
 		
+		WebElement priceValue = driver.findElement(By.xpath("//meta[@property='og:title']"));
+				System.out.println();
+		 _HotelQuote.setHotelName(priceValue.getAttribute("content"));
+		 
 		  WebElement Avail = driver.findElement(By.className("editDatesForm"));
 		  Select _ChkInDay = new Select(Avail.findElement(By.name("checkin_monthday")));
 	        Select _ChkOutDay = new Select(Avail.findElement(By.name("checkout_monthday")));
 	        Select _ChkInMonth = new Select(Avail.findElement(By.name("checkin_year_month")));
 	        Select _ChkOutMonth = new Select(Avail.findElement(By.name("checkout_year_month")));
 
+	        System.out.println(Integer.toString(StartCalendar.get(Calendar.DAY_OF_MONTH)));
+	        System.out.println(Integer.toString(StartCalendar.get(Calendar.YEAR))+"-"+Integer.toString(StartCalendar.get(Calendar.MONTH)+1));
 	        
-	       
+	        
 	        _ChkInDay.selectByValue(Integer.toString(StartCalendar.get(Calendar.DAY_OF_MONTH)));
-	        _ChkInMonth.selectByValue(Integer.toString(StartCalendar.get(Calendar.YEAR))+"-"+Integer.toString(StartCalendar.get(Calendar.MONTH)));
+	        _ChkInMonth.selectByValue(Integer.toString(StartCalendar.get(Calendar.YEAR))+"-"+Integer.toString(StartCalendar.get(Calendar.MONTH)+1));
 	      
-	      
+	        System.out.println(Integer.toString(EndCalendar.get(Calendar.DAY_OF_MONTH)));
+	        System.out.println(Integer.toString(EndCalendar.get(Calendar.YEAR))+"-"+Integer.toString(EndCalendar.get(Calendar.MONTH)+1));
 	        
 	        _ChkOutDay.selectByValue(Integer.toString(EndCalendar.get(Calendar.DAY_OF_MONTH)));
-	        _ChkOutMonth.selectByValue(Integer.toString(EndCalendar.get(Calendar.YEAR))+"-"+Integer.toString(EndCalendar.get(Calendar.MONTH)));
-	    
+	        _ChkOutMonth.selectByValue(Integer.toString(EndCalendar.get(Calendar.YEAR))+"-"+Integer.toString(EndCalendar.get(Calendar.MONTH)+1));
+	       
+	       
 		 driver.findElement(By.className("avail-date-submit")).click();
-		 System.out.println(driver.getCurrentUrl());
+		 url= driver.getCurrentUrl();
+		 System.out.println(url);
 		 
 	//	 System.out.println(driver.findElement(By.id("available_rooms_header1")).getText());
 		 String res = driver.findElement(By.className("b-tooltip-with-price-breakdown-tracker")).toString();
@@ -88,6 +99,7 @@ public class BookingHotelScrape {
 			{
 				 System.out.println(m.group(0));
 				 _HotelQuote.setValue(sdf.format(StartCalendar.getTime()), Integer.valueOf(m.group(0).substring(1)));
+				 _HotelQuote.setUrl(sdf.format(StartCalendar.getTime()), url);
 			}
 		
 	}

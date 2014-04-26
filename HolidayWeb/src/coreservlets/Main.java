@@ -7,6 +7,8 @@ import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -33,28 +35,72 @@ public class Main {
 	//	m.Start();
 		
 	}
-	public static String Test(String g)
+	public static String Test(String arg)
 	{
 		Main m = new Main();
 	
-		BookingHotelScrape b = new BookingHotelScrape();
-		b.Scrape();
 		
 		
-		if (g.equals("HOTEL"))
+		
+		if (arg.equals("HOTEL"))
 		{
-	//	return m.getHotels();
+		return m.getHotels();
 		}
-		else
+		if (arg.equals("FLIGHTS"))
 		{
-	//		return m.getFlights();
+		//	return m.getFlights();
 		}
+		if (arg.equals("SINGLE_HOTEL"))
+		{
+		//	return m.getHotel(arg);
+		}
+		
 		
 			return null;
 					
 		
 	}
 	
+	public static String SingleHotelRequest(String url, String startdate,
+			String duration, String variance) {
+		Main m = new Main();
+		
+		return m.getHotel(url,startdate,Integer.parseInt(duration),Integer.parseInt(variance));
+		
+	}
+	
+	private String getHotel(String url, String startdate, int duration, int variance)
+	{
+		BookingHotelScrape b = new BookingHotelScrape();
+		HotelObject _HotelQuote = new HotelObject(url);
+		try {
+			_HotelQuote = b.Scrape(url,startdate,duration,variance);
+			String _ChartJson = makeChartHotel(_HotelQuote);
+			String _urlMap = getUrlMap(_HotelQuote);
+			return _HotelQuote.GetHotelName()+";"+_ChartJson+";"+_urlMap;
+		} catch (java.text.ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		
+		
+	}
+	
+	private String getUrlMap(HotelObject _HotelQuote) {
+		
+		String result ="";
+		
+		for (Map.Entry<String,String> entry : _HotelQuote.getUrlMap())
+		{
+		result += entry.getKey()+":::"+entry.getValue()+"#";
+		}
+			
+		return result;
+		
+		
+		
+	}
 	private String getHotels()
 	{
 		BookingScrape B = new BookingScrape();
@@ -72,10 +118,13 @@ public class Main {
 		String Hotels = makeChartHotels(_ListOfHotelQuotes,StartDate1,Duration);
 			return Hotels;
 	}
-private String getFlights()
+public static String FlightRequest(String startdate, String duration, String variance, String _origin, String _destination)
 {
 		SkyScannerScrape s = new SkyScannerScrape();
 
+		Main m = new Main();
+		
+	
 	
 	Calendar StartDate = new GregorianCalendar(2014,7,21);
 	Calendar StartDate1 = new GregorianCalendar(2014,7,21);
@@ -84,16 +133,85 @@ private String getFlights()
 	
 	List<FlightObject> _ListOfFlightQuotes = new ArrayList<FlightObject>();
 
-	_ListOfFlightQuotes = s.ScrapeScanner(StartDate,Duration,Variance);
+	try {
+		_ListOfFlightQuotes = s.ScrapeScanner(startdate,Integer.valueOf(duration),Integer.valueOf(variance), _origin, _destination);
+		String Flight = m.makeChart(_ListOfFlightQuotes);
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		return Flight;
+	} catch (java.text.ParseException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+		return null;
+	}
 
 	
-	String Flight = makeChart(_ListOfFlightQuotes);
 	
-		return Flight;
+	
+		
 	
 	
 
 }
+private String makeChartHotel(HotelObject _HotelObject)
+{
+	
+
+	 LinkedList l_cols = new LinkedList();
+        LinkedList l_final = new LinkedList();
+        JSONObject obj1 = new JSONObject();
+        JSONObject obj_cols_1 = new JSONObject();
+        JSONObject obj_cols_2 = new JSONObject();
+
+        obj_cols_1.put("id", "");
+        obj_cols_1.put("label", "Date");
+        obj_cols_1.put("type", "string");
+
+        obj_cols_2.put("id", "");
+        obj_cols_2.put("label", "Price");
+        obj_cols_2.put("type", "number");
+
+        l_cols.add(obj_cols_1);
+        l_cols.add(obj_cols_2);
+
+        obj1.put("cols", l_cols);
+    
+        for (Map.Entry<String, Integer> entry: _HotelObject.getPriceMap())
+        {
+
+    	LinkedList l1_rows = new LinkedList();
+			JSONObject obj_row1 = new JSONObject();
+        JSONObject obj_row2 = new JSONObject();
+
+
+        obj_row1.put("v", entry.getKey());
+        obj_row1.put("f", null);
+        obj_row2.put("v", entry.getValue());
+        obj_row2.put("f", null);
+
+        l1_rows.add(obj_row1);
+        l1_rows.add(obj_row2);
+
+        LinkedHashMap m1 = new LinkedHashMap();
+        m1.put("c", l1_rows);
+        l_final.add(m1);
+        }
+        obj1.put("rows", l_final);
+        System.out.println(obj1.toJSONString());
+        String s = JSONObject.escape(obj1.toJSONString());
+	return s; 
+	 
+}
+
+
+
 
      private String makeChartHotels(List<HotelObject> _ListOfHotelQuotes, Calendar startDate, int duration)
      {
@@ -254,6 +372,8 @@ private String getFlights()
  		return s; 
     	 
      }
+	
+	
 
 	}
 	

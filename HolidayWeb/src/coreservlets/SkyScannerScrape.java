@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -50,8 +51,13 @@ import java.net.*;
 
 public class SkyScannerScrape {
 
-	public List<FlightObject> ScrapeScanner(Calendar StartDate, int duration, int variance)
+	public List<FlightObject> ScrapeScanner(String startdate, int duration, int variance,String _origin, String _destination) throws ParseException
 	{
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		Calendar StartDate = new GregorianCalendar();
+		StartDate.setTime(sdf.parse(startdate));
+		
+		
 		
 		List<FlightObject> _ListOfFlightQuotes = new ArrayList<FlightObject>();
 		
@@ -62,13 +68,13 @@ public class SkyScannerScrape {
 		
 		for (int i=0;i<variance;i++)
 		{
-		StartDate.add(Calendar.DATE, 1);
-		EndDate.add(Calendar.DATE, 1);
+		
 		System.out.println(StartDate.getTime());
 		System.out.println(EndDate.getTime());
-		String _sessionUrl = GetSession(StartDate);
+		String _sessionUrl = GetSession(StartDate, _origin, _destination);
 		_ListOfFlightQuotes.add(GetResultsSet(_sessionUrl,StartDate, _ListOfFlightQuotes));
-	      
+		StartDate.add(Calendar.DATE, 1);
+		EndDate.add(Calendar.DATE, 1);
 		}
 		
 		
@@ -82,7 +88,7 @@ public class SkyScannerScrape {
 		
 		
 	}
-	private String GetSession(Calendar StartDate)
+	private String GetSession(Calendar StartDate, String _origin, String _destination)
 	{
 		try{
 		String SessionHeader =  null;
@@ -108,8 +114,8 @@ public class SkyScannerScrape {
 		params.add(new BasicNameValuePair("country", "GB"));
 		params.add(new BasicNameValuePair("currency", "GBP"));
 		params.add(new BasicNameValuePair("locale", "en-GB"));
-		params.add(new BasicNameValuePair("originplace", "LON"));
-		params.add(new BasicNameValuePair("destinationplace", "TFS"));
+		params.add(new BasicNameValuePair("originplace", _origin));
+		params.add(new BasicNameValuePair("destinationplace", _destination));
 		params.add(new BasicNameValuePair("outbounddate", _outDate));
 	//	params.add(new BasicNameValuePair("inbounddate", "2014-08-14"));
 		params.add(new BasicNameValuePair("locationschema", "Iata"));
