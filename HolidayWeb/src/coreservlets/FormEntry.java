@@ -38,9 +38,9 @@ String home = "LON";
 	  if (checkflight !=null)
 	  {
 	  String OutboundFlightjson = Main.FlightRequest(startdate,duration,variance,home,destination);
-	  String InboundFlightjson = Main.FlightRequest(startdate,duration,variance,destination, home);
+	//  String InboundFlightjson = Main.FlightRequest(startdate,duration,variance,destination, home);
 	  request.setAttribute("outboundflightchart", OutboundFlightjson);
-	  request.setAttribute("inboundflightchart", InboundFlightjson);
+//	  request.setAttribute("inboundflightchart", InboundFlightjson);
 	  }
 	  
 	  

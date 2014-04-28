@@ -18,6 +18,7 @@ google.setOnLoadCallback(drawChartInboundFlight);
 
 var Map ={};
 var url = "${hotelurlmap}";
+
 //Map['2014-08-14']="https://developers.google.com/chart/";
 
 var url_array = url.split("#");
@@ -36,7 +37,7 @@ function drawChart() {
 	 
 	   document.getElementById("HotelName").innerHTML = "${hotelname}";
 	  var data = new google.visualization.DataTable(myObject);
-	  data.sort([{column: 0, desc:true}, {column: 1}]);
+	  data.sort([{column: 0, asc:true}, {column: 1}]);
  
 
   var options = {
@@ -52,11 +53,16 @@ function drawChart() {
   google.visualization.events.addListener(chart, 'select', function(){
 	  var selectedItem = chart.getSelection()[0];
 	    var date = data.getValue(selectedItem.row,0);
+	    alert(date);
 	  if (date in Map)
 		  {
+		  alert(Map[date]);
 		  window.location.assign(Map[date]);
 		  }
-	    
+	  else
+		  {
+		  alert("no url present");
+		  }
 	    
 	  
 	  
@@ -71,11 +77,11 @@ function drawChartOutboundFlight() {
 	 var myObject = "${outboundflightchart}";
 	   alert (myObject);
 	  var data = new google.visualization.DataTable(myObject);
-	  data.sort([{column: 0, desc:true}, {column: 1}]);
+	  data.sort([{column: 0, asc:true}, {column: 1}]);
 
 
 var options = {
-  title: 'Outbound Flight Prices'
+  title: 'Flight Prices'
 };
 
 var chart = new google.visualization.LineChart(document.getElementById('outbound_flight_div'));

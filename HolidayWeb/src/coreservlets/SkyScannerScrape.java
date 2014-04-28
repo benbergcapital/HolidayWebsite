@@ -72,6 +72,7 @@ public class SkyScannerScrape {
 		System.out.println(StartDate.getTime());
 		System.out.println(EndDate.getTime());
 		String _sessionUrl = GetSession(StartDate, _origin, _destination);
+		System.out.println(_sessionUrl);
 		_ListOfFlightQuotes.add(GetResultsSet(_sessionUrl,StartDate, _ListOfFlightQuotes));
 		StartDate.add(Calendar.DATE, 1);
 		EndDate.add(Calendar.DATE, 1);
@@ -149,7 +150,8 @@ public class SkyScannerScrape {
 		else
 		{
 
-			return SessionHeader+"?stops=0&outbounddepartstarttime=10:00&outbounddepartendtime=15:00&apiKey=prtl6749387986743898559646983194";	
+			return SessionHeader+"?stops=0&outbounddepartstarttime=10:00&outbounddepartendtime=15:00&apiKey=prtl6749387986743898559646983194";
+		
 		}
 		}
 		

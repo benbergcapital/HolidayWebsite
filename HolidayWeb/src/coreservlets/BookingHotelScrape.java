@@ -87,20 +87,31 @@ public class BookingHotelScrape {
 		 System.out.println(url);
 		 
 	//	 System.out.println(driver.findElement(By.id("available_rooms_header1")).getText());
-		 String res = driver.findElement(By.className("b-tooltip-with-price-breakdown-tracker")).toString();
-		 System.out.println(res);
+		 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		 if (driver.getPageSource().contains("sold out on your dates"))
+		 {
+			 _HotelQuote.setValue(sdf.format(StartCalendar.getTime()), 0,"Sold out on this date");
+			 _HotelQuote.setUrl(sdf.format(StartCalendar.getTime()), url);
+		 }
+		 else
+		 {
+		 
+		 String _priceElement = driver.findElement(By.className("b-tooltip-with-price-breakdown-tracker")).toString();
+		 String _conditionsElement = driver.findElement(By.className("ico_policy_info")).getText();
+	//	 System.out.println(_priceElement);
 		 
 		 Pattern p = Pattern.compile("£(\\d*\\.?\\d+?)");
-		 Matcher m = p.matcher(res);
+		 Matcher m = p.matcher(_priceElement);
 		 
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			
 	
 			if (m.find())
 			{
 				 System.out.println(m.group(0));
-				 _HotelQuote.setValue(sdf.format(StartCalendar.getTime()), Integer.valueOf(m.group(0).substring(1)));
+				 _HotelQuote.setValue(sdf.format(StartCalendar.getTime()), Integer.valueOf(m.group(0).substring(1)),_conditionsElement);
 				 _HotelQuote.setUrl(sdf.format(StartCalendar.getTime()), url);
 			}
+		 }
 		
 	}
 	

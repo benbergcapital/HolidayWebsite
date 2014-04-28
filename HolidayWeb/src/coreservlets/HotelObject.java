@@ -10,17 +10,26 @@ public class HotelObject {
 	private String _HotelName;
 	
 	private HashMap<String ,Integer> _PricesMap; 
-	private HashMap<String ,String> _UrlMap; 
+	private HashMap<String ,String> _UrlMap;
+	private HashMap<String ,String> _TooltipMap; 
 	HotelObject(String name)
 	{
 		this._HotelName = name;
 		_PricesMap = new HashMap<String ,Integer>();
 		_UrlMap = new HashMap<String, String>();
+		_TooltipMap = new HashMap<String, String>();
 	}
 	
+	void setValue(String StartDate, int Price, String tooltip)
+	{
+		_PricesMap.put(StartDate,Price);
+		_TooltipMap.put(StartDate,tooltip);
+		
+	}
 	void setValue(String StartDate, int Price)
 	{
 		_PricesMap.put(StartDate,Price);
+		
 		
 	}
 	
@@ -28,6 +37,11 @@ public class HotelObject {
 	{
 		return _PricesMap.get(StartDate) != null ? _PricesMap.get(StartDate) : 0;		
 	}
+	String GetTooltip(String StartDate)
+	{
+		return _TooltipMap.get(StartDate) != null ? _TooltipMap.get(StartDate) : "";		
+	}
+	
 	String GetHotelName()
 	{
 		_HotelName = _HotelName.replace("?", "&#9734");

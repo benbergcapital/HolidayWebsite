@@ -15,7 +15,14 @@ public class FlightObject {
 
 	public String getDate()
 	{
+		if (Date !=null)
+		{
 		return Date;
+		}
+		else
+		{
+			return "0";
+		}
 	}
 	public Double getPrice()
 	{

@@ -77,7 +77,9 @@ public class Main {
 			_HotelQuote = b.Scrape(url,startdate,duration,variance);
 			String _ChartJson = makeChartHotel(_HotelQuote);
 			String _urlMap = getUrlMap(_HotelQuote);
-			return _HotelQuote.GetHotelName()+";"+_ChartJson+";"+_urlMap;
+			String result = _HotelQuote.GetHotelName()+";"+_ChartJson+";"+_urlMap;
+			System.out.println(result);
+			return result;
 		} catch (java.text.ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -132,17 +134,18 @@ public static String FlightRequest(String startdate, String duration, String var
 	int Variance = 10; //Number of days after start day to check prices
 	
 	List<FlightObject> _ListOfFlightQuotes = new ArrayList<FlightObject>();
-
+	List<FlightObject> _ListOfFlightQuotes2 = new ArrayList<FlightObject>();
 	try {
 		_ListOfFlightQuotes = s.ScrapeScanner(startdate,Integer.valueOf(duration),Integer.valueOf(variance), _origin, _destination);
-		String Flight = m.makeChart(_ListOfFlightQuotes);
+		
+		
+		_ListOfFlightQuotes2 = s.ScrapeScanner(startdate,Integer.valueOf(duration),Integer.valueOf(variance), _destination,_origin);
+	//	String Flight = m.makeChart(_ListOfFlightQuotes);
 		
 		
 		
 		
-		
-		
-		
+		String Flight = m.makeChart(_ListOfFlightQuotes,_ListOfFlightQuotes2);
 		
 		
 		return Flight;
@@ -169,7 +172,8 @@ private String makeChartHotel(HotelObject _HotelObject)
         JSONObject obj1 = new JSONObject();
         JSONObject obj_cols_1 = new JSONObject();
         JSONObject obj_cols_2 = new JSONObject();
-
+        JSONObject obj_cols_3 = new JSONObject();
+        
         obj_cols_1.put("id", "");
         obj_cols_1.put("label", "Date");
         obj_cols_1.put("type", "string");
@@ -177,10 +181,15 @@ private String makeChartHotel(HotelObject _HotelObject)
         obj_cols_2.put("id", "");
         obj_cols_2.put("label", "Price");
         obj_cols_2.put("type", "number");
+        
+        obj_cols_3.put("id", "");
+        obj_cols_3.put("role", "tooltip");
+        obj_cols_3.put("type", "string");
 
         l_cols.add(obj_cols_1);
         l_cols.add(obj_cols_2);
-
+        l_cols.add(obj_cols_3);
+        
         obj1.put("cols", l_cols);
     
         for (Map.Entry<String, Integer> entry: _HotelObject.getPriceMap())
@@ -189,16 +198,19 @@ private String makeChartHotel(HotelObject _HotelObject)
     	LinkedList l1_rows = new LinkedList();
 			JSONObject obj_row1 = new JSONObject();
         JSONObject obj_row2 = new JSONObject();
-
+        JSONObject obj_row3 = new JSONObject();
 
         obj_row1.put("v", entry.getKey());
         obj_row1.put("f", null);
         obj_row2.put("v", entry.getValue());
         obj_row2.put("f", null);
+        obj_row3.put("v", _HotelObject.GetTooltip(entry.getKey()));
+        obj_row3.put("f", null);
 
         l1_rows.add(obj_row1);
         l1_rows.add(obj_row2);
-
+        l1_rows.add(obj_row3);
+        
         LinkedHashMap m1 = new LinkedHashMap();
         m1.put("c", l1_rows);
         l_final.add(m1);
@@ -323,7 +335,7 @@ private String makeChartHotel(HotelObject _HotelObject)
 		return s; 
 		
 	}
-	private String makeChart(List<FlightObject> _ListOfFlightQuotes)
+	private String makeChart(List<FlightObject> _ListOfFlightQuotes,List<FlightObject> _ListOfFlightQuotes2)
      {
     	
 
@@ -332,18 +344,29 @@ private String makeChartHotel(HotelObject _HotelObject)
  	        JSONObject obj1 = new JSONObject();
  	        JSONObject obj_cols_1 = new JSONObject();
  	        JSONObject obj_cols_2 = new JSONObject();
-
- 	        obj_cols_1.put("id", "");
+ 	        JSONObject obj_cols_3 = new JSONObject();
+ 	        JSONObject obj_cols_4 = new JSONObject();
+ 	      
+ 	      	obj_cols_1.put("id", "");
  	        obj_cols_1.put("label", "Date");
  	        obj_cols_1.put("type", "string");
 
  	        obj_cols_2.put("id", "");
- 	        obj_cols_2.put("label", "Price");
+ 	        obj_cols_2.put("label", "OutboundPrice");
  	        obj_cols_2.put("type", "number");
+ 	        
+ 	       obj_cols_3.put("id", "");
+	        obj_cols_3.put("label", "InboundPrice");
+	        obj_cols_3.put("type", "number");
+	        
+	        obj_cols_4.put("id", "");
+ 	        obj_cols_4.put("label", "TotalPrice");
+ 	        obj_cols_4.put("type", "number");
 
  	        l_cols.add(obj_cols_1);
  	        l_cols.add(obj_cols_2);
-
+ 	       l_cols.add(obj_cols_3);
+ 	      l_cols.add(obj_cols_4);
  	        obj1.put("cols", l_cols);
  	    
  	        for (FlightObject _F : _ListOfFlightQuotes)
@@ -352,18 +375,32 @@ private String makeChartHotel(HotelObject _HotelObject)
  	    	LinkedList l1_rows = new LinkedList();
   			JSONObject obj_row1 = new JSONObject();
  	        JSONObject obj_row2 = new JSONObject();
+ 	        JSONObject obj_row3 = new JSONObject();
+ 	        JSONObject obj_row4= new JSONObject();
 
-
+ 	      
+ 	        Double OutPrice = _F.getPrice();
+ 	        Double InPrice = getInboundFlightPrice(_ListOfFlightQuotes2,_F.getDate());
+ 	   	   Double Total = OutPrice+InPrice;
+ 	      
+ 	      
+ 	      
+ 	      
  	        obj_row1.put("v", _F.getDate());
  	        obj_row1.put("f", null);
- 	        obj_row2.put("v", _F.getPrice());
+ 	        obj_row2.put("v", OutPrice);
  	        obj_row2.put("f", null);
+ 	        obj_row3.put("v", InPrice);
+	        obj_row3.put("f", null);
+	        obj_row4.put("v", Total);
+ 	        obj_row4.put("f", null);
 
  	        l1_rows.add(obj_row1);
  	        l1_rows.add(obj_row2);
-
+ 	        l1_rows.add(obj_row3);
+ 	   	    l1_rows.add(obj_row4);
  	        LinkedHashMap m1 = new LinkedHashMap();
- 	        m1.put("c", l1_rows);
+        	m1.put("c", l1_rows);
              l_final.add(m1);
  	        }
  	        obj1.put("rows", l_final);
@@ -372,6 +409,19 @@ private String makeChartHotel(HotelObject _HotelObject)
  		return s; 
     	 
      }
+	private Double getInboundFlightPrice(List<FlightObject> _ListOfFlightQuotes2, String date) {
+		
+		  for (FlightObject _F : _ListOfFlightQuotes2)
+		  {
+			  if (_F.getDate().equals(date))
+			  {
+			  	return _F.getPrice();
+			  }
+		  }
+		
+		
+		return 0.0;
+	}
 	
 	
 
