@@ -15,11 +15,11 @@ function isNumberKey(evt){
     return true;
 }
 </script>
-<form action="${pageContext.request.contextPath}/FormEntry" method="post">
+<form action="FormEntry" method="post">
 Hotel URL: <input type="text" name="url"/><br>
 Start Date: <input type="date" name="startdate"/><br>
-Duration: <input type="number" name="duration" min="1" max="20" onkeypress="return isNumberKey(event)"/><br>
-Variance from Start Date: <input type="number" name="variance" min="1" max="20" onkeypress="return isNumberKey(event)"/><br>
+Duration: <input type="number" name="duration" min="1" max="60" onkeypress="return isNumberKey(event)"/><br>
+Variance from Start Date: <input type="number" name="variance" min="1" max="60" onkeypress="return isNumberKey(event)"/><br>
 Destination Airport Code IATA: <input type="text" name="destination" maxlength="4"/><br>
 <input type="checkbox" name="hotelcheck" value="true">Hotel <input type="checkbox" name="flightcheck" value="true">Flight
 <input type="submit">

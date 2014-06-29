@@ -22,9 +22,10 @@ public class HotelObject {
 	
 	void setValue(String StartDate, int Price, String tooltip)
 	{
+		synchronized(this){
 		_PricesMap.put(StartDate,Price);
 		_TooltipMap.put(StartDate,tooltip);
-		
+		}
 	}
 	void setValue(String StartDate, int Price)
 	{
