@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -40,25 +42,26 @@ public class BookingHotelScrape {
 		EndDate.add(Calendar.DATE, duration);
 		HotelObject _HotelQuote = new HotelObject("test");
 		List<ThreadWorker> threads = new ArrayList<ThreadWorker>();
+		ExecutorService executor = Executors.newFixedThreadPool(5);
 		for (int i=0;i<variance;i++)
 		{
 		System.out.println(StartDate.getTime());
 		System.out.println(EndDate.getTime());
-			//	driver.manage().deleteAllCookies();
-		//Required otherwise booking.com remembers some things making it difficult to scrape
-		
-	  //  GetResultsSet(driver,url,StartDate,EndDate, _HotelQuote);
-		
-		 ThreadWorker temp= new  ThreadWorker(url,StartDate,EndDate, _HotelQuote);
-	     temp.start();
+	
+		 Runnable worker = new ThreadWorker(url,StartDate,EndDate, _HotelQuote);
+	
 	     System.out.println("Started Thread:" + StartDate);
-		threads.add(temp);
-		
+
+	     executor.execute(worker);
 	    StartDate.add(Calendar.DATE, 1);
 		EndDate.add(Calendar.DATE, 1);
 		
 		}
-		for (Thread curThread : threads) {
+		 executor.shutdown();
+		 while (!executor.isTerminated()) {
+	        }
+	        System.out.println("Finished all threads");
+		/*for (Thread curThread : threads) {
 		    try {
 			// starting from the first wait for each one to finish.
 		    	System.out.println(curThread.getId());
@@ -66,8 +69,9 @@ public class BookingHotelScrape {
 		    } catch (InterruptedException e) {
 	
 		    }
-		}
-		System.out.println("All threads joined");
+		    */
+		//}
+	//	System.out.println("All threads joined");
 		
 		
 		return _HotelQuote;
@@ -137,15 +141,16 @@ public class BookingHotelScrape {
 				 String _conditionsElement = driver.findElement(By.className("ico_policy_info")).getText();
 			//	 System.out.println(_priceElement);
 				 
-				 Pattern p = Pattern.compile("£(\\d*\\.?\\d+?)");
+				 Pattern p = Pattern.compile("£\\d*,\\d*|£\\d*");
 				 Matcher m = p.matcher(_priceElement);
 				 
 					
 			
 					if (m.find())
 					{
-						 System.out.println(m.group(0));
-						 _HotelQuote.setValue(sdf.format(StartCalendar.getTime()), Integer.valueOf(m.group(0).substring(1)),_conditionsElement);
+						 System.out.println(m.group(0).substring(1));
+						int price = Integer.valueOf(m.group(0).substring(1));
+						 _HotelQuote.setValue(sdf.format(StartCalendar.getTime()),price ,"£"+price+"\n"+_conditionsElement);
 						 _HotelQuote.setUrl(sdf.format(StartCalendar.getTime()), url);
 					}
 				 }

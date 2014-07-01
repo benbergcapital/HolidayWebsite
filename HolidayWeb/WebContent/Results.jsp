@@ -53,10 +53,10 @@ function drawChart() {
   google.visualization.events.addListener(chart, 'select', function(){
 	  var selectedItem = chart.getSelection()[0];
 	    var date = data.getValue(selectedItem.row,0);
-	    alert(date);
+	  
 	  if (date in Map)
 		  {
-		  alert(Map[date]);
+		
 		  window.location.assign(Map[date]);
 		  }
 	  else
@@ -75,7 +75,7 @@ function drawChart() {
 function drawChartOutboundFlight() {
 	
 	 var myObject = "${outboundflightchart}";
-	   alert (myObject);
+	//   alert (myObject);
 	  var data = new google.visualization.DataTable(myObject);
 	  data.sort([{column: 0, asc:true}, {column: 1}]);
 
@@ -90,7 +90,7 @@ chart.draw(data, options);
 function drawChartInboundFlight() {
 	
 	 var myObject = "${inboundflightchart}";
-	   alert (myObject);
+	//   alert (myObject);
 	  var data = new google.visualization.DataTable(myObject);
 	  data.sort([{column: 0, desc:true}, {column: 1}]);
 
